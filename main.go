@@ -7,8 +7,10 @@ import (
 	pb "go-grpc-c/proto"
 	"log"
 	"net"
+	"strings"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type proto struct {
@@ -20,6 +22,8 @@ var (
 )
 
 func (p *proto) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	log.Printf("Token: %s", strings.Split(md["authorization"][0], " ")[1])
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
