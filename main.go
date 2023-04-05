@@ -1,17 +1,13 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
-	"go-grpc-c/db"
 	pb "go-grpc-c/proto"
 	"log"
 	"net"
-	"strings"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 type proto struct {
@@ -21,20 +17,6 @@ type proto struct {
 var (
 	port = flag.Int("port", 50051, "The server port")
 )
-
-func (p *proto) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	log.Printf("Token: %s", strings.Split(md["authorization"][0], " ")[1])
-
-	dbClient, dbCtx, dbCancelFunc, dbErr := db.Connect()
-	if dbErr != nil {
-		panic(dbErr)
-	}
-	defer db.Close(dbClient, dbCtx, dbCancelFunc)
-
-	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
-}
 
 func main() {
 	flag.Parse()

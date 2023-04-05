@@ -22,8 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiClient interface {
-	// Sends a greeting
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	UserRegister(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterResponse, error)
 }
 
 type apiClient struct {
@@ -34,9 +33,9 @@ func NewApiClient(cc grpc.ClientConnInterface) ApiClient {
 	return &apiClient{cc}
 }
 
-func (c *apiClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/Api/SayHello", in, out, opts...)
+func (c *apiClient) UserRegister(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterResponse, error) {
+	out := new(UserRegisterResponse)
+	err := c.cc.Invoke(ctx, "/Api/UserRegister", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +46,7 @@ func (c *apiClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
 type ApiServer interface {
-	// Sends a greeting
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	UserRegister(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -56,8 +54,8 @@ type ApiServer interface {
 type UnimplementedApiServer struct {
 }
 
-func (UnimplementedApiServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedApiServer) UserRegister(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserRegister not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -72,20 +70,20 @@ func RegisterApiServer(s grpc.ServiceRegistrar, srv ApiServer) {
 	s.RegisterService(&Api_ServiceDesc, srv)
 }
 
-func _Api_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _Api_UserRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServer).SayHello(ctx, in)
+		return srv.(ApiServer).UserRegister(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Api/SayHello",
+		FullMethod: "/Api/UserRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(ApiServer).UserRegister(ctx, req.(*UserRegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -98,8 +96,8 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ApiServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Api_SayHello_Handler,
+			MethodName: "UserRegister",
+			Handler:    _Api_UserRegister_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

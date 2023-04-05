@@ -3,18 +3,19 @@ syntax = "proto3";
 
 option go_package = "./proto";
 
-// The service definition.
 service Api {
-    // Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    rpc UserRegister (UserRegisterRequest) returns (UserRegisterResponse) {}
 }
   
-// The request message containing the user's name.
-message HelloRequest {
-    string name = 1;
+message UserRegisterRequest {
+    string username = 1;
+    string password = 2;
 }
   
-// The response message containing the greetings
-message HelloReply {
-    string message = 1;
+message UserRegisterResponse {
+    string status = 1;
+    string timestamp = 2;
+    string id = 3;
+    string password = 4;
+    string username = 5;
 }
