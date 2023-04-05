@@ -37,3 +37,31 @@ func (p *proto) UserRegister(ctx context.Context, in *pb.UserRegisterRequest) (*
 		Password:  in.GetPassword(),
 	}, nil
 }
+
+func (p *proto) UserLogin(ctx context.Context, in *pb.UserLoginRequest) (*pb.UserLoginResponse, error) {
+	if in.GetPassword() == "" || in.GetUsername() == "" {
+		return nil, status.Error(codes.InvalidArgument, "USERNAME_AND_PASSWORD_REQUIRED")
+	}
+
+	user := User{
+		Username: in.GetUsername(),
+		Password: in.GetPassword(),
+	}
+
+	_, err := db.Find("users", user)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	token, err := generateJWT(user.Username)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.UserLoginResponse{
+		Status:    "true",
+		Timestamp: time.Now().UTC().String(),
+		Username:  in.GetUsername(),
+		Token:     token,
+	}, nil
+}

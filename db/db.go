@@ -53,8 +53,12 @@ func Insert(collection string, data interface{}) (*mongo.InsertOneResult, error)
 	defer close(client, ctx, cancel)
 
 	coll := client.Database(db).Collection(collection)
+	result, err := coll.InsertOne(ctx, data)
+	if err != nil {
+		return nil, errors.New("CANNOT_CREATED_USER")
+	}
 
-	return coll.InsertOne(ctx, data)
+	return result, nil
 }
 
 func Find(collection string, data interface{}) (*mongo.SingleResult, error) {
@@ -66,7 +70,7 @@ func Find(collection string, data interface{}) (*mongo.SingleResult, error) {
 
 	coll := client.Database(db).Collection(collection)
 	result := coll.FindOne(ctx, data)
-	if result == nil {
+	if result.Err() != nil {
 		return nil, errors.New("USER_CANNOT_FOUND")
 	}
 
