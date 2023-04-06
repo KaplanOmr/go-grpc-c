@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func generateJWT(username string) (string, error) {
+func GenerateJWT(username string) (string, error) {
 	expirationTime := time.Now().Add(60 * time.Minute)
 	jwtKey := []byte(jwtKey)
 	claims := &Claims{
@@ -31,4 +31,16 @@ func generateJWT(username string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func CheckJWT(tokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(jwtKey), nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", errors.New("TOKEN_INVALID")
+	}
+
+	return token.Claims.(*Claims).Username, nil
 }

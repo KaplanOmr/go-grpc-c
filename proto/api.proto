@@ -54,6 +54,7 @@ message LeaderboardResponse {
 }
 
 message UserObject {
-    int32 id = 1;
+    string id = 1;
     string username = 2;
+    float score = 3;
 }
