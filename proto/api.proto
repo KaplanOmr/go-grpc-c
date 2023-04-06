@@ -6,6 +6,8 @@ option go_package = "./proto";
 service Api {
     rpc UserRegister (UserRegisterRequest) returns (UserRegisterResponse) {}
     rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {}
+    rpc GameResult (GameResultRequest) returns (GameResultResponse) {}
+    rpc Leaderboard (LeaderboardRequest) returns (LeaderboardResponse) {}
 }
   
 message UserRegisterRequest {
@@ -32,4 +34,26 @@ message UserLoginResponse {
     string id = 3;
     string token = 4;
     string username = 5;
+}
+
+message GameResultRequest {
+    float score = 1;
+}
+
+message GameResultResponse {
+    string status = 1;
+    string timestamp = 2;
+}
+
+message LeaderboardRequest {}
+
+message LeaderboardResponse {
+    string status = 1;
+    string timestamp = 2;
+    repeated UserObject result = 3;
+}
+
+message UserObject {
+    int32 id = 1;
+    string username = 2;
 }

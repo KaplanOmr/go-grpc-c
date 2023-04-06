@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiClient interface {
 	UserRegister(ctx context.Context, in *UserRegisterRequest, opts ...grpc.CallOption) (*UserRegisterResponse, error)
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+	GameResult(ctx context.Context, in *GameResultRequest, opts ...grpc.CallOption) (*GameResultResponse, error)
+	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
 }
 
 type apiClient struct {
@@ -52,12 +54,32 @@ func (c *apiClient) UserLogin(ctx context.Context, in *UserLoginRequest, opts ..
 	return out, nil
 }
 
+func (c *apiClient) GameResult(ctx context.Context, in *GameResultRequest, opts ...grpc.CallOption) (*GameResultResponse, error) {
+	out := new(GameResultResponse)
+	err := c.cc.Invoke(ctx, "/Api/GameResult", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiClient) Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error) {
+	out := new(LeaderboardResponse)
+	err := c.cc.Invoke(ctx, "/Api/Leaderboard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
 type ApiServer interface {
 	UserRegister(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error)
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
+	GameResult(context.Context, *GameResultRequest) (*GameResultResponse, error)
+	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -70,6 +92,12 @@ func (UnimplementedApiServer) UserRegister(context.Context, *UserRegisterRequest
 }
 func (UnimplementedApiServer) UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
+}
+func (UnimplementedApiServer) GameResult(context.Context, *GameResultRequest) (*GameResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GameResult not implemented")
+}
+func (UnimplementedApiServer) Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Leaderboard not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -120,6 +148,42 @@ func _Api_UserLogin_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_GameResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GameResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).GameResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Api/GameResult",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).GameResult(ctx, req.(*GameResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Api_Leaderboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaderboardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).Leaderboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Api/Leaderboard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).Leaderboard(ctx, req.(*LeaderboardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +198,14 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserLogin",
 			Handler:    _Api_UserLogin_Handler,
+		},
+		{
+			MethodName: "GameResult",
+			Handler:    _Api_GameResult_Handler,
+		},
+		{
+			MethodName: "Leaderboard",
+			Handler:    _Api_Leaderboard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
